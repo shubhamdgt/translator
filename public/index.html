@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Language Translator</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+</head>
+<body class="p-4 bg-light">
+  <div class="container">
+    <h2 class="mb-4">🌐167 Language Translator </h2>
+
+    <div class="mb-3">
+      <label for="fromLang" class="form-label">From Language:</label>
+      <select class="form-select" id="fromLang"></select>
+    </div>
+
+    <div class="mb-3">
+      <label for="toLang" class="form-label">To Language:</label>
+      <select class="form-select" id="toLang"></select>
+    </div>
+
+    <div class="mb-3">
+      <label for="text" class="form-label">Text to Translate:</label>
+      <textarea class="form-control" id="text" rows="4" placeholder="Enter your text..."></textarea>
+    </div>
+
+    <button class="btn btn-primary" onclick="translateText()">Translate</button>
+
+    <div class="mt-4" id="loader" style="display:none;">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <span class="ms-2">Translating, please wait...</span>
+    </div>
+
+    <div class="mt-4">
+      <label for="result" class="form-label">Translated Text:</label>
+      <div id="result" class="border p-3 bg-white rounded"></div>
+    </div>
+
+    <!-- Display response time -->
+    <div class="mt-2" id="responseTime" class="text-muted"></div>
+  </div>
+
+  <script>
+    // const languages = {
+    //   en: "English",
+    //   hi: "Hindi",
+    //   mr: "Marathi",
+    //   gu: "Gujarati",
+    //   pa: "Punjabi",
+    //   ta: "Tamil",
+    //   kn: "Kannada",
+    //   te: "Telugu",
+    //   ml: "Malayalam",
+    //   or: "Odia"
+    // };
+
+    const languages = {
+  af: "Afrikaans",
+  sq: "Albanian",
+  am: "Amharic",
+  ar: "Arabic",
+  hy: "Armenian",
+  as: "Assamese",
+  az: "Azerbaijani",
+  eu: "Basque",
+  be: "Belarusian",
+  bn: "Bengali",
+  bs: "Bosnian",
+  bg: "Bulgarian",
+  ca: "Catalan",
+  ceb: "Cebuano",
+  ny: "Chichewa",
+  zh: "Chinese (Simplified)",
+  co: "Corsican",
+  hr: "Croatian",
+  cs: "Czech",
+  da: "Danish",
+  nl: "Dutch",
+  en: "English",
+  eo: "Esperanto",
+  et: "Estonian",
+  ee: "Ewe",
+  fil: "Filipino",
+  fi: "Finnish",
+  fr: "French",
+  fy: "Frisian",
+  gl: "Galician",
+  ka: "Georgian",
+  de: "German",
+  el: "Greek",
+  gn: "Guarani",
+  gu: "Gujarati",
+  ht: "Haitian Creole",
+  ha: "Hausa",
+  haw: "Hawaiian",
+  he: "Hebrew",
+  hi: "Hindi",
+  hmn: "Hmong",
+  hu: "Hungarian",
+  is: "Icelandic",
+  ig: "Igbo",
+  ilo: "Ilocano",
+  id: "Indonesian",
+  ga: "Irish",
+  it: "Italian",
+  ja: "Japanese",
+  jv: "Javanese",
+  kn: "Kannada",
+  kk: "Kazakh",
+  km: "Khmer",
+  rw: "Kinyarwanda",
+  ko: "Korean",
+  ku: "Kurdish (Kurmanji)",
+  ckb: "Kurdish (Sorani)",
+  ky: "Kyrgyz",
+  lo: "Lao",
+  la: "Latin",
+  lv: "Latvian",
+  ln: "Lingala",
+  lt: "Lithuanian",
+  lg: "Luganda",
+  lb: "Luxembourgish",
+  mk: "Macedonian",
+  mai: "Maithili",
+  mg: "Malagasy",
+  ms: "Malay",
+  ml: "Malayalam",
+  mt: "Maltese",
+  mi: "Maori",
+  mr: "Marathi",
+  mni: "Meiteilon (Manipuri)",
+  mn: "Mongolian",
+  my: "Myanmar (Burmese)",
+  ne: "Nepali",
+  no: "Norwegian",
+  nso: "Sepedi",
+  ny: "Nyanja",
+  or: "Odia",
+  om: "Oromo",
+  ps: "Pashto",
+  fa: "Persian",
+  pl: "Polish",
+  pt: "Portuguese",
+  pa: "Punjabi",
+  qu: "Quechua",
+  ro: "Romanian",
+  ru: "Russian",
+  sm: "Samoan",
+  sa: "Sanskrit",
+  gd: "Scots Gaelic",
+  sr: "Serbian",
+  st: "Sesotho",
+  sn: "Shona",
+  sd: "Sindhi",
+  si: "Sinhala",
+  sk: "Slovak",
+  sl: "Slovenian",
+  so: "Somali",
+  es: "Spanish",
+  su: "Sundanese",
+  sw: "Swahili",
+  sv: "Swedish",
+  tg: "Tajik",
+  ta: "Tamil",
+  tt: "Tatar",
+  te: "Telugu",
+  th: "Thai",
+  ti: "Tigrinya",
+  ts: "Tsonga",
+  tr: "Turkish",
+  tk: "Turkmen",
+  uk: "Ukrainian",
+  ur: "Urdu",
+  ug: "Uyghur",
+  uz: "Uzbek",
+  vi: "Vietnamese",
+  cy: "Welsh",
+  xh: "Xhosa",
+  yi: "Yiddish",
+  yo: "Yoruba",
+  zu: "Zulu",
+  tw: "Twi",
+  ab: "Abkhazian",
+ach: "Acholi",
+aa: "Afar",
+alu: "Alur",
+ba: "Bashkir",
+bem: "Bemba",
+bew: "Betawi",
+bho: "Bhojpuri",
+bik: "Bikol",
+bxr: "Buryat",
+cha: "Chamorro",
+ce: "Chechen",
+chk: "Chuukese",
+prs: "Dari",
+dv: "Dhivehi",
+din: "Dinka",
+doi: "Dogri",
+dyu: "Dyula",
+fj: "Fijian",
+fon: "Fon",
+ht: "Haitian Creole",
+ccp: "Hakha Chin",
+hmn: "Hmong",
+hsr: "Hunsrik",
+iba: "Iban",
+iku: "Inuktut (Syllabics)",
+jam: "Jamaican Patois",
+jgo: "Jingpo",
+kl: "Kalaallisut",
+kau: "Kanuri",
+pam: "Kapampangan",
+ltg: "Latgalian",
+lij: "Ligurian",
+lim: "Limburgish",
+lmo: "Lombard",
+gv: "Manx",
+mh: "Marshallese",
+mfe: "Mauritian Creole",
+min: "Minang",
+lus: "Mizo",
+nah: "Nahuatl (Eastern Huasteca)",
+nbl: "Ndebele (South)",
+new: "Nepalbhasa (Newari)",
+nqo: "NKo",
+oc: "Occitan",
+pag: "Pangasinan",
+pap: "Papiamento",
+qtc: "Qʼeqchiʼ",
+run: "Rundi",
+crs: "Seychellois Creole",
+shn: "Shan",
+szl: "Silesian",
+ss: "Swati",
+ty: "Tahitian",
+zgh: "Tamazight (Tifinagh)",
+tiv: "Tiv",
+tpi: "Tok Pisin",
+tcy: "Tulu",
+tum: "Tumbuka",
+udm: "Udmurt",
+vec: "Venetian",
+war: "Waray",
+wo: "Wolof",
+sah: "Yakut",
+yua: "Yucatec Maya",
+zap: "Zapotec"
+
+};
+
+
+    function populateLanguageDropdowns() {
+      const fromSelect = document.getElementById("fromLang");
+      const toSelect = document.getElementById("toLang");
+
+      Object.entries(languages).forEach(([code, name]) => {
+        const optionFrom = document.createElement("option");
+        const optionTo = document.createElement("option");
+
+        optionFrom.value = code;
+        optionFrom.textContent = name;
+        optionTo.value = code;
+        optionTo.textContent = name;
+
+        if (code === "en") optionFrom.selected = true;
+        if (code === "mr") optionTo.selected = true;
+
+        fromSelect.appendChild(optionFrom);
+        toSelect.appendChild(optionTo);
+      });
+    }
+
+    async function translateText() {
+  const from = document.getElementById("fromLang").value;
+  const to = document.getElementById("toLang").value;
+  const text = document.getElementById("text").value;
+  
+  const loader = document.getElementById("loader");
+  const result = document.getElementById("result");
+  const responseTimeDisplay = document.getElementById("responseTime");
+
+  result.innerHTML = "";
+  loader.style.display = "block";
+  responseTimeDisplay.innerHTML = ""; // Reset the response time display
+
+  const startTime = performance.now(); // Start the timer
+
+  try {
+    const response = await fetch("http://localhost:3000/translate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ from, to, text }), // Request body
+    });
+
+    const endTime = performance.now(); // End the timer
+    const duration = (endTime - startTime).toFixed(2); // Calculate the time taken
+
+    // Display the response time
+    responseTimeDisplay.innerHTML = `Response Time: ${duration} ms`;
+
+    const data = await response.json();
+    if (data.translated) {
+      result.innerHTML = `<strong>${data.translated}</strong>`;
+    } else {
+      result.innerHTML = `<span class="text-danger">Error: ${data.error}</span>`;
+    }
+  } catch (error) {
+    result.innerHTML = `<span class="text-danger">Server Error: ${error.message}</span>`;
+  } finally {
+    loader.style.display = "none";
+  }
+}
+
+    window.onload = populateLanguageDropdowns;
+  </script>
+</body>
+</html>
