@@ -2,7 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const puppeteer = require("puppeteer");
-
+const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -66,6 +66,10 @@ process.on("SIGINT", async () => {
   process.exit();
 });
 
-app.listen(3000, () => {
-  console.log("🚀 Optimized server running on http://localhost:3000");
+app.get('/', (req, res) => {
+  res.send('Puppeteer Automation Running');
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Optimized server running on http://localhost:${PORT}`);
 });
