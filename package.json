@@ -1,15 +1,16 @@
 {
   "name": "browser-automation",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Headless browser automation using Puppeteer on Render",
+  "main": "translator.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "puppeteer install"
+    "start": "node translator.js",
+    "postinstall": "puppeteer install",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": ["puppeteer", "browser-automation", "node", "express"],
+  "author": "Shubham",
+  "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
     "docx": "^9.2.0",
